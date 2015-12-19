@@ -11,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.squareup.picasso.Picasso;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -50,6 +52,16 @@ public class MovieDetailActivity extends AppCompatActivity {
             Log.d("success", "success in updating UI");
         } else
             showErrorDialog();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this, "MDA", Toast.LENGTH_LONG).show();
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void showErrorDialog() {

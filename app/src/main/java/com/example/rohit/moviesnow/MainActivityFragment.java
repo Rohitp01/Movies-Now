@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,7 +42,7 @@ public class MainActivityFragment extends Fragment {
     private AlertDialog choice;
     private String FLAG_CURRENT = MOST_POPULAR;
     private JSONArray movieDetails;
-
+    int position=0;
 
     public MainActivityFragment() {
     }
@@ -52,6 +53,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         setHasOptionsMenu(true);
+        Toast.makeText(getContext(),"ONCV",Toast.LENGTH_LONG).show();
         ImageAdapter adapter = new ImageAdapter(inflater.getContext(),imgUrl);
         View rootview = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView) rootview.findViewById(R.id.movie_grid);
@@ -63,7 +65,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
@@ -111,25 +112,53 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        updateView(FLAG_CURRENT);
+        Toast.makeText(getContext(),"OnResume",Toast.LENGTH_LONG);
     }
 
     @Override
     public void onStop() {
+        Toast.makeText(getContext(),"OS",Toast.LENGTH_LONG).show();
         super.onStop();
     }
 
 
     @Override
     public void onDestroy() {
+        Toast.makeText(getContext(),"OD",Toast.LENGTH_LONG).show();
         super.onDestroy();
+    }
+
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        position = gridView.getFirstVisiblePosition();
+        Log.d("append", String.valueOf(position));
+        Toast.makeText(getContext(),"OSIC",Toast.LENGTH_LONG).show();
+        outState.putInt("list",position);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            // Restore last state for checked position.
+            Toast.makeText(getContext(),"OAC",Toast.LENGTH_LONG).show();
+            position = savedInstanceState.getInt("list");
+        }
+        else {
+            Toast.makeText(getContext(),"OAC-else",Toast.LENGTH_LONG).show();
+        if(position!=0){}
+        else{updateView(FLAG_CURRENT);}
+        }
     }
 
 
     public void updateView(String type) {
         FLAG_CURRENT = type;
         if (FetchMovie()) {
-
+            ImageAdapter adapter = new ImageAdapter(getContext(),imgUrl);
+            gridView.setAdapter(adapter);
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
