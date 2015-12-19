@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,11 +41,22 @@ public class MainActivityFragment extends Fragment {
     private AlertDialog choice;
     private String FLAG_CURRENT = MOST_POPULAR;
     private JSONArray movieDetails;
-    int position=0;
+    int sortc=0;
 
     public MainActivityFragment() {
     }
 
+
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        Toast.makeText(getContext(),"OC"+FLAG_CURRENT,Toast.LENGTH_LONG).show();
+        if(savedInstanceState!=null)
+        {
+            FLAG_CURRENT=savedInstanceState.getString("SORTSTATE",FLAG_CURRENT);
+            Toast.makeText(getContext(),"OCIF"+FLAG_CURRENT,Toast.LENGTH_LONG).show();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,42 +77,21 @@ public class MainActivityFragment extends Fragment {
         super.onStart();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.mapMenu:
-                showChoices();
-                break;
-        }
-        return true;
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("SORTSTATE", FLAG_CURRENT);
+        Toast.makeText(getContext(),"OSIS"+FLAG_CURRENT,Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
 
-    private void showChoices() {
-
-        choice = new AlertDialog.Builder(getContext())
-                .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        switch (item) {
-                            case 0:
-                                Toast.makeText(getContext(),"case 0",Toast.LENGTH_LONG).show();
-                                updateView(MOST_POPULAR);
-                                break;
-                            case 1:Toast.makeText(getContext(),"case 1",Toast.LENGTH_LONG).show();
-                                updateView(HIGHLY_RATED);
-                                break;
-                        }
-                        choice.dismiss();
-                    }
-                }).setTitle("Choose")
-                .show();
-    }
 
     @Override
     public void onPause() {
@@ -112,7 +101,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Toast.makeText(getContext(),"OnResume",Toast.LENGTH_LONG);
+        Toast.makeText(getContext(), "OnResume", Toast.LENGTH_LONG);
     }
 
     @Override
@@ -130,27 +119,41 @@ public class MainActivityFragment extends Fragment {
 
 
     @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        position = gridView.getFirstVisiblePosition();
-        Log.d("append", String.valueOf(position));
-        Toast.makeText(getContext(),"OSIC",Toast.LENGTH_LONG).show();
-        outState.putInt("list",position);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            // Restore last state for checked position.
-            Toast.makeText(getContext(),"OAC",Toast.LENGTH_LONG).show();
-            position = savedInstanceState.getInt("list");
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.mapMenu:
+                showChoices();
+                break;
         }
-        else {
-            Toast.makeText(getContext(),"OAC-else",Toast.LENGTH_LONG).show();
-        if(position!=0){}
-        else{updateView(FLAG_CURRENT);}
-        }
+        return true;
+    }
+
+    private void showChoices() {
+
+        choice = new AlertDialog.Builder(getContext())
+                .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        switch (item) {
+                            case 0:
+                                Toast.makeText(getContext(),"case 0",Toast.LENGTH_LONG).show();
+                                FLAG_CURRENT=MOST_POPULAR;
+                                updateView(FLAG_CURRENT);
+                                break;
+                            case 1:Toast.makeText(getContext(),"case 1",Toast.LENGTH_LONG).show();
+                                FLAG_CURRENT=HIGHLY_RATED;
+                                updateView(FLAG_CURRENT);
+                                break;
+                        }
+                        choice.dismiss();
+                    }
+                }).setTitle("Choose")
+                .show();
     }
 
 
@@ -194,20 +197,6 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-    private void showErrorDialog() {
-        new AlertDialog.Builder(getActivity())
-                .setCancelable(true)
-                .setMessage("Sorry Something Went Wrong.Try again Later!")
-                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {}
-                })
-                .setNegativeButton("Okay", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {}
-
-                }).show();
-    }
 
 
     private boolean FetchMovie() {
@@ -235,6 +224,22 @@ public class MainActivityFragment extends Fragment {
             return false;
         }
 
+    }
+
+
+    private void showErrorDialog() {
+        new AlertDialog.Builder(getActivity())
+                .setCancelable(true)
+                .setMessage("Sorry Something Went Wrong.Try again Later!")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {}
+                })
+                .setNegativeButton("Okay", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {}
+
+                }).show();
     }
 
 
