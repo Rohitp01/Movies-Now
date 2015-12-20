@@ -1,6 +1,7 @@
 package com.example.rohit.moviesnow;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -17,7 +18,12 @@ import java.net.URL;
 public class FetchMovieData extends AsyncTask<String,Void,String> {
 
     private final Context mContext;
-    private final String API_KEY = "a6db300325aa8dffa561dcbde6226b24";
+    private final String API_KEY = "ENTER THE KEY HERE";
+    public static final String TRAILER_QUERY_KEY = "videos";
+    public static final String REVIEW_QUERY_KEY = "reviews";
+    private boolean trailerQuery;
+    private boolean reviewQuery;
+    private boolean movieQuery;
     HttpURLConnection urlConnection = null;
     BufferedReader reader = null;
     String MovieDBjson = null;
@@ -29,8 +35,36 @@ public class FetchMovieData extends AsyncTask<String,Void,String> {
     @Override
     protected String doInBackground(String... params) {
         try {
-            String sort = params[0];
-            URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=" + sort + "&api_key=" + API_KEY);
+            String sort = "sort_by";
+            final String BASE_URL = "http://api.themoviedb.org/3/discover/movie";
+            final String API = "api_key";
+            Uri builtUri;
+
+
+        /* if(params.length > 1){
+                builtUri = Uri.parse(BASE_URL).buildUpon()
+                        .appendPath(String.valueOf(params[0]))
+                        .appendPath(String.valueOf(params[1]))
+                        .appendQueryParameter(API,API_KEY )
+                        .build();
+
+                if(String.valueOf(params[1]).equals(TRAILER_QUERY_KEY)){
+                    trailerQuery = true;
+                }
+                if(String.valueOf(params[1]).equals(REVIEW_QUERY_KEY)){
+                    reviewQuery = true;
+                }
+            }else {*/
+                builtUri = Uri.parse(BASE_URL).buildUpon()
+                        .appendQueryParameter(sort, params[0])
+                        .appendQueryParameter(API, API_KEY)
+                        .build();
+                movieQuery = true;
+           // }
+            URL url = new URL(builtUri.toString());
+
+
+           // URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=" + sort + "&api_key=" + API_KEY);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
@@ -53,8 +87,8 @@ public class FetchMovieData extends AsyncTask<String,Void,String> {
             }
 
             MovieDBjson = buffer.toString();
-            //url=new URL("http://api.themoviedb.org/3/movie/11309/videos?api_key=a6db300325aa8dffa561dcbde6226b24");
-
+            //url=new URL("http://api.themoviedb.org/3/movie/11309/videos?api_key=");
+            //"http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key="
             Log.d("result", MovieDBjson);
         } catch (IOException e) {
             Log.e("PlaceholderFragment", "Error ", e);

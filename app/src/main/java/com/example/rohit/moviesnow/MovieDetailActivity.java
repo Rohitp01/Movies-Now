@@ -55,6 +55,15 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void showErrorDialog() {
         new AlertDialog.Builder(MovieDetailActivity.this)
                 .setCancelable(true)

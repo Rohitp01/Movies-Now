@@ -2,6 +2,7 @@ package com.example.rohit.moviesnow;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -38,24 +39,24 @@ public class MainActivityFragment extends Fragment {
     private GridView gridView;
     private String resultJSON = null;
     private String[] imgUrl = new String[20];
+    private int[] movieID = new int[20];
     private AlertDialog choice;
     private String FLAG_CURRENT = MOST_POPULAR;
     private JSONArray movieDetails;
-    int sortc=0;
 
-    public MainActivityFragment() {
-    }
+
+    public MainActivityFragment() {}
 
 
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Toast.makeText(getContext(),"OC"+FLAG_CURRENT,Toast.LENGTH_LONG).show();
+        SharedPreferences prefs = getContext().getSharedPreferences("sortby", 0);
+        FLAG_CURRENT = prefs.getString("SORTSTATE", MOST_POPULAR);
+        Toast.makeText(getContext(),"PP"+FLAG_CURRENT,Toast.LENGTH_LONG).show();
+
         if(savedInstanceState!=null)
-        {
-            FLAG_CURRENT=savedInstanceState.getString("SORTSTATE",FLAG_CURRENT);
-            Toast.makeText(getContext(),"OCIF"+FLAG_CURRENT,Toast.LENGTH_LONG).show();
-        }
+        {}
     }
 
     @Override
@@ -77,21 +78,15 @@ public class MainActivityFragment extends Fragment {
         super.onStart();
     }
 
-
-
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("SORTSTATE", FLAG_CURRENT);
-        Toast.makeText(getContext(),"OSIS"+FLAG_CURRENT,Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
-
-
 
     @Override
     public void onPause() {
@@ -101,22 +96,22 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Toast.makeText(getContext(), "OnResume", Toast.LENGTH_LONG);
     }
 
     @Override
     public void onStop() {
-        Toast.makeText(getContext(),"OS",Toast.LENGTH_LONG).show();
         super.onStop();
-    }
+        Toast.makeText(getContext(),"OS",Toast.LENGTH_LONG).show();
+        SharedPreferences.Editor editor = getContext().getSharedPreferences("sortby", 0).edit();
+        editor.putString("SORTSTATE", FLAG_CURRENT);
+        editor.commit();
 
+    }
 
     @Override
     public void onDestroy() {
-        Toast.makeText(getContext(),"OD",Toast.LENGTH_LONG).show();
         super.onDestroy();
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -209,6 +204,7 @@ public class MainActivityFragment extends Fragment {
                 for (int i = 0; i < movieDetails.length(); i++) {
                     JSONObject temp_mov = movieDetails.getJSONObject(i);
                     imgUrl[i] = "http://image.tmdb.org/t/p/w185/" + temp_mov.getString("poster_path");
+                    movieID[i]=temp_mov.getInt("id");
                 }
                 return true;
             } else
