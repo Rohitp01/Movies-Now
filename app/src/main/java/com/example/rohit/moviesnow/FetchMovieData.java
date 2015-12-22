@@ -18,7 +18,7 @@ import java.net.URL;
 public class FetchMovieData extends AsyncTask<String,Void,String> {
 
     private final Context mContext;
-    private final String API_KEY = "ENTER THE KEY HERE";
+    private final String API_KEY = "a6db300325aa8dffa561dcbde6226b24";
     public static final String TRAILER_QUERY_KEY = "videos";
     public static final String REVIEW_QUERY_KEY = "reviews";
     private boolean trailerQuery;

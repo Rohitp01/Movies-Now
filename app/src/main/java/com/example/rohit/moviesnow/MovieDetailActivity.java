@@ -7,6 +7,8 @@ import android.os.PersistableBundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ImageView;
@@ -17,7 +19,9 @@ import com.squareup.picasso.Picasso;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Rohit on 18/12/2015.
@@ -32,22 +36,30 @@ public class MovieDetailActivity extends AppCompatActivity {
     private ImageView imageView;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private String title, release, poster, vote, plot;
+    private RecyclerView trailerview;
+    private TrailersAdapter adapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_movie_detail);
         plotView = (TextView) findViewById(R.id.plot);
         voteAvg = (TextView) findViewById(R.id.voteAvg);
         releaseDate = (TextView) findViewById(R.id.releaseDate);
         Title = (TextView) findViewById(R.id.titlemain);
         imageView = (ImageView) findViewById(R.id.headerimage);
-
+        trailerview=(RecyclerView)findViewById(R.id.trailers);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapseBar);
+
+        adapter=new TrailersAdapter(this,getData());
+        trailerview.setAdapter(adapter);
+        trailerview.setLayoutManager(new LinearLayoutManager(this));
+
         if (uiUpdate()) {
             Log.d("success", "success in updating UI");
         } else
@@ -55,6 +67,19 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
 
+    public List<Trailers> getData(){
+
+        List<Trailers>data=new ArrayList<>();
+        String[] temp={"A","B","C","D","E","F","G"};
+
+        for(int i=0;i<temp.length;i++)
+        {
+            Trailers t=new Trailers();
+            t.title=temp[i];
+            data.add(t);
+        }
+        return data;
+    }
     @Override
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() > 0) {
@@ -108,6 +133,11 @@ public class MovieDetailActivity extends AppCompatActivity {
         Picasso.with(this)
                 .load(poster)
                 .into(imageView);
+
+
+
+
+
         return true;
     }
 

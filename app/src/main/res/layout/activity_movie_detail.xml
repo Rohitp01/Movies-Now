@@ -49,6 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -104,12 +105,19 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:textSize="16dp" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Trailers:"
                 android:textSize="16dp"/>
 
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/trailers"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
