@@ -1,34 +1,50 @@
 package com.example.rohit.moviesnow;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-public class MainActivity extends AppCompatActivity {
+import android.support.v7.app.ActionBarActivity;
 
-    final CharSequence[] items = {" Most Popular ", " Highest Rated ", "Favourites"};
-    int sortby=0;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
+public class MainActivity extends ActionBarActivity implements MovieGridFragment.Callbacks{
+	private boolean mTwoPane;
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		if (findViewById(R.id.movie_detail_container) != null) {
+			mTwoPane = true;
+		}
 
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container, new MainActivityFragment(),"maf");
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
-        }
-    }
+		/*
+		For testing Parse SDK
+		ParseObject testObject = new ParseObject("TestObject");
+		testObject.put("foo", "bar");
+		testObject.saveInBackground();*/
 
-    @Override
-    public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
-        }
-    }
+	}
 
+
+	@Override
+	public void onItemSelected(long id) {
+		if (mTwoPane) {
+			// In two-pane mode, show the detail view in this activity by
+			// adding or replacing the detail fragment using a
+			// fragment transaction.
+			Bundle arguments = new Bundle();
+			arguments.putLong(MovieDetailFragment.ARG_MOVIE_ID, id);
+			MovieDetailFragment fragment = new MovieDetailFragment();
+			fragment.setArguments(arguments);
+			getSupportFragmentManager().beginTransaction()
+					.replace(R.id.movie_detail_container, fragment)
+					.commit();
+
+		} else {
+			// In single-pane mode, simply start the detail activity
+			// for the selected item ID.
+			Intent detailIntent = new Intent(this, MovieDetailActivity.class);
+			detailIntent.putExtra(MovieDetailFragment.ARG_MOVIE_ID, id);
+			startActivity(detailIntent);
+		}
+	}
 }
+
+
